@@ -1075,7 +1075,8 @@ html.visor-abierto { overflow: hidden; }
   background: rgba(138, 182, 211, .96);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  color: var(--blanco);
+  /* elementos en azul oscuro: mejor contraste sobre el celeste claro (5,4:1; el blanco daba 2,2:1) */
+  color: var(--azul-oscuro);
   padding: 14px var(--pad);
   transform: translateY(100%);
   transition: transform .5s cubic-bezier(.16, 1, .3, 1);
@@ -1089,9 +1090,9 @@ html.con-audio body { padding-bottom: 64px; }
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 1.5px solid var(--blanco);
+  border: 1.5px solid currentColor;
   background: transparent;
-  color: var(--blanco);
+  color: inherit;
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -1107,16 +1108,16 @@ html.con-audio body { padding-bottom: 64px; }
   content: "";
   position: absolute;
   left: 0; right: 0; top: 50%;
-  height: 1px;
-  background: var(--blanco);
+  height: 1.5px;
+  background: currentColor;
 }
 .audio__dot {
   position: absolute;
   top: 50%;
-  width: 7px; height: 7px;
-  margin: -3.5px 0 0 -3.5px;
+  width: 9px; height: 9px;
+  margin: -4.5px 0 0 -4.5px;
   border-radius: 50%;
-  background: var(--blanco);
+  background: currentColor;
 }
 .audio__time { font-size: 15px; white-space: nowrap; }
 .detalle-final { position: relative; margin-top: -2px; background: var(--azul-medio); padding: 70px 0 100px; }
@@ -1188,4 +1189,71 @@ html.con-audio body { padding-bottom: 64px; }
   .ruleta__wheel { transition-duration: .01s; }
   html { scroll-behavior: auto; }
   .js-reveal .reveal { opacity: 1; transform: none; filter: none; transition: none; }
+}
+
+/* =========================================================
+   Ajustes solo para mobile
+   ========================================================= */
+.ficha-caso { position: relative; }
+.ficha-caso__cerrar { display: none; }
+
+@media (max-width: 760px) {
+  /* Ruleta: la ficha del proyecto se abre como modal sobre la página */
+  .ruleta__ficha,
+  .ruleta-zona.con-ficha .ruleta__ficha {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    width: auto;
+    max-height: none;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    overflow-y: auto;
+    background: rgba(15, 47, 140, .72);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+  .ruleta__ficha { opacity: 0; visibility: hidden; transition: opacity .35s ease, visibility 0s linear .35s; }
+  .ruleta-zona.con-ficha .ruleta__ficha { opacity: 1; visibility: visible; transition: opacity .35s ease; }
+  .ficha-caso { width: min(420px, 100%); transform: translateY(20px); transition: transform .5s cubic-bezier(.16, 1, .3, 1); }
+  .con-ficha .ficha-caso { transform: none; }
+  .ruleta__ficha.is-cambiando .ficha-caso { opacity: 1; transform: translateY(20px); }
+  .ficha-caso__cerrar {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    width: 40px;
+    height: 40px;
+    border: 1.5px solid var(--azul);
+    border-radius: 50%;
+    background: var(--crema);
+    color: var(--azul);
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  /* Explorar proyectos: menos aire entre el header y la grilla */
+  .site-header--solid { padding-bottom: 20px; }
+  .grid-proyectos { margin-top: 8px; }
+
+  /* Detalle: cabecera más baja para que el contenido parta antes */
+  .hero--detalle { height: 44vh; height: 44svh; min-height: 300px; }
+
+  /* Índice: la sección actual se marca solo con una línea (sin flecha) */
+  .indice a::before { display: none; }
+  .indice a::after { left: 0; background-size: 100% 2.5px; }
+  .indice { scrollbar-width: none; }               /* sin barra de desplazamiento visible */
+  .indice::-webkit-scrollbar { display: none; }
+  .bloque { padding: 56px 0 72px; }                /* menos aire arriba y abajo de cada sección */
+}
+
+@media (max-width: 640px) {
+  /* Explorar proyectos: cada proyecto (foto + recuadro) como bloque, separado del siguiente */
+  .grid-proyectos { row-gap: 28px; }
+  .proyecto { display: flex; flex-direction: column; }
+  .proyecto .tile--img { order: -1; } /* siempre la foto arriba y el recuadro abajo */
 }

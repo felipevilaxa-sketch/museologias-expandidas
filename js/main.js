@@ -94,10 +94,25 @@
     const btn = $(".ruleta__btn", ruleta);
     let angle = 0, girando = false;
 
+    // en mobile la ficha se abre como modal sobre la página (ver CSS @media 760px)
+    const enMobile = () => window.matchMedia("(max-width: 760px)").matches;
+    const cerrarFicha = () => {
+      zona.classList.remove("con-ficha");
+      document.documentElement.classList.remove("visor-abierto");
+      btn.focus();
+    };
+    ficha.addEventListener("click", (e) => {
+      if (e.target.closest(".ficha-caso__cerrar") || e.target === ficha) cerrarFicha(); // botón ✕ o clic en el fondo
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && enMobile() && zona.classList.contains("con-ficha")) cerrarFicha();
+    });
+
     const mostrarFicha = (p) => {
       ficha.classList.remove("is-cambiando");
       ficha.innerHTML = `
-        <div class="ficha-caso">
+        <div class="ficha-caso" role="dialog" aria-label="${p.nombre}">
+          <button class="ficha-caso__cerrar" type="button" aria-label="Cerrar">✕</button>
           <div class="ficha-caso__foto"><img src="${p.img}" alt=""></div>
           <div class="ficha-caso__cuerpo">
             <span class="ficha-caso__fecha">${p.fecha}</span>
@@ -107,6 +122,10 @@
           </div>
         </div>`;
       zona.classList.add("con-ficha");
+      if (enMobile()) {
+        document.documentElement.classList.add("visor-abierto"); // bloquea el scroll de fondo
+        $(".ficha-caso__cerrar", ficha).focus();
+      }
     };
 
     const girarA = (target, vueltas) => {
@@ -115,6 +134,7 @@
       btn.disabled = true;
       // la ruleta no se mueve mientras gira: si la ficha ya está abierta, solo se apaga su contenido
       ficha.classList.add("is-cambiando");
+      if (enMobile()) zona.classList.remove("con-ficha"); // en mobile el modal se cierra mientras gira
       $$(".ruleta__seg", wheel).forEach((s) => s.classList.remove("is-selected"));
       // girar para que el caso "target" quede bajo el puntero (arriba)
       const current = ((angle % 360) + 360) % 360;
