@@ -67,12 +67,33 @@
     <section class="explorar-home" aria-labelledby="explorar-titulo">
       <div class="explorar-home__escena">
         <h2 class="section-label" id="explorar-titulo"><a href="proyectos.html">Explorar proyectos</a></h2>
-        <div class="ruleta-zona">
+
+        <!-- Selector entre las dos propuestas de exploración al azar -->
+        <div class="selector-modo" role="group" aria-label="Forma de explorar">
+          <button type="button" class="selector-modo__opcion" data-modo="ruleta" aria-pressed="true">Ruleta</button>
+          <button type="button" class="selector-modo__opcion" data-modo="fichero" aria-pressed="false">Fichero</button>
+        </div>
+
+        <!-- Opción 1: ruleta -->
+        <div class="ruleta-zona modo" data-modo-panel="ruleta">
           <div class="ruleta" data-ruleta>
             <button class="ruleta__btn" type="button">Gira la ruleta</button>
           </div>
-          <!-- ficha del caso donde se detiene la ruleta (la llena js/main.js) -->
+          <!-- botón del caso donde se detiene la ruleta (lo llena js/main.js) -->
           <div class="ruleta__ficha" aria-live="polite"></div>
+        </div>
+
+        <!-- Opción 2: fichero de archivo (lo construye js/main.js) -->
+        <div class="fichero-zona modo" data-modo-panel="fichero" hidden>
+          <div class="fichero" data-fichero>
+            <div class="fichero__cartas"></div>
+            <div class="fichero__frente" aria-hidden="true">
+              <span class="fichero__etiqueta">Proyectos</span>
+              <span class="fichero__manilla"></span>
+            </div>
+          </div>
+          <p class="fichero__aviso" aria-live="polite"></p>
+          <button class="fichero__btn" type="button">Sacar una ficha</button>
         </div>
       </div>
     </section>

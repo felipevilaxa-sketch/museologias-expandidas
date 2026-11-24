@@ -25,7 +25,8 @@
     <section class="hero hero--detalle" aria-label="Imagen del proyecto"></section>
 
     <div class="ficha">
-      <h1>Exposición Principal de la Fundación de Ayuda Social de las Iglesias Cristianas</h1>
+      <!-- mismo nombre que la primera ficha del listado (js/data.js) -->
+      <h1>Exposición Principal FASIC</h1>
       <p class="ficha__tipo">Desarrollo curatorial y museográfico</p>
       <span class="pill">2016 / 2018 / 2021</span>
     </div>
@@ -37,13 +38,18 @@
           <li><a href="#camino">El camino</a></li>
           <li><a href="#frutos">Frutos</a></li>
           <li><a href="#cruces">Cruces</a></li>
-          <li><a href="#recursos">Recursos</a></li>
         </ul>
 
         <div class="secciones">
           <!-- PRESENTACIÓN -->
           <section class="bloque bloque--blanco" id="presentacion">
-            <button class="foto" type="button" style="--ratio: 16 / 10" aria-label="Ampliar foto: Imagen principal del proyecto" data-desc="Imagen principal del proyecto"></button>
+            <!-- Video de presentación (YouTube): pegar el ID del video en data-youtube -->
+            <div class="video video--oscuro" data-youtube="">
+              <button class="video__play" type="button" aria-label="Reproducir video de presentación">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+              </button>
+              <span class="video__label">Ver video</span>
+            </div>
             <div class="texto">
               <p>La exposición permanente de la Fundación de Ayuda Social de las Iglesias Cristianas (FASIC) fue desarrollada en tres etapas, entre 2016 y 2021. El proyecto consideró un proceso de investigación, la creación del guión curatorial —escritura del relato y selección de material de archivo—, el diseño museográfico, la producción y el montaje.</p>
               <p>Su objetivo fue poner en valor la historia del trabajo de la organización en la defensa de los derechos humanos y el patrimonio documental generado y conservado desde su creación, en 1975. La exposición buscó facilitar el acceso público a una parte de este archivo e impulsar nuevas formas de aproximación a sus contenidos, con el propósito de narrar y promover la reflexión sobre las prácticas de solidaridad, acompañamiento —jurídico y psicológico— y resistencia desarrolladas por FASIC durante la dictadura civil militar y el período posterior, hasta la actualidad.</p>
@@ -90,7 +96,7 @@
           </section>
 
           <!-- FRUTOS -->
-          <section class="bloque bloque--blanco" id="frutos">
+          <section class="bloque bloque--textura" id="frutos">
             <div class="foto-bajada">
               <button class="foto" type="button" style="--ratio: 4 / 3" aria-label="Ampliar foto: Sala de la exposición con textos y documentos en los muros y una vitrina" data-desc="Sala de la exposición con textos y documentos en los muros y una vitrina"></button>
               <p class="bajada">BAJADA DE FOTOGRAFÍA Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis</p>
@@ -99,7 +105,7 @@
           </section>
 
           <!-- CRUCES -->
-          <section class="bloque bloque--topo" id="cruces">
+          <section class="bloque bloque--celeste" id="cruces">
             <span class="caja-titulo">Presentación en LASA 2017</span>
             <div class="caja">
               <p>“Patrimonio documental en exposición: el caso de FASIC, un ejercicio de representación de la memoria traumática reciente en Chile”</p>
@@ -109,19 +115,26 @@
               <p>La investigación puso especial atención en las tensiones entre archivo, memoria y representación; en el papel de los objetos y documentos dentro de las exposiciones contemporáneas; y en la necesidad de comprender los espacios de memoria como dispositivos de interpretación del pasado y diálogo con el presente.</p>
             </div>
 
-            <span class="caja-titulo">Archivo FASIC</span>
-            <div class="caja">
-              <a href="https://fasic.cl/wp/archivo-documental/" target="_blank" rel="noopener">https://fasic.cl/wp/archivo-documental/</a>
-              <!-- imagen del archivo: fija, no se amplía -->
-              <div class="foto foto--afiche foto--fija" style="--ratio: 3 / 4" role="img" aria-label="Afiche LASA Cono Sur, Montevideo 19–22 julio 2017"></div>
-            </div>
-          </section>
-
-          <!-- RECURSOS -->
-          <section class="bloque bloque--recursos" id="recursos">
-            <div class="texto" style="max-width:1080px">
-              <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</p>
-            </div>
+            <!-- Links externos: nombre a la izquierda, enlace a la derecha.
+                 Las filas "Nombre de archivo" son ejemplos de dónde irían otros links. -->
+            <ul class="caja links-externos">
+              <li>
+                <span class="links-externos__nombre">Archivo FASIC</span>
+                <a href="https://fasic.cl/wp/archivo-documental/" target="_blank" rel="noopener">https://fasic.cl/wp/archivo-documental/</a>
+              </li>
+              <li>
+                <span class="links-externos__nombre">Nombre de archivo</span>
+                <a href="#" target="_blank" rel="noopener">https://www.sitio-externo.cl/nombre-de-archivo</a>
+              </li>
+              <li>
+                <span class="links-externos__nombre">Nombre de archivo</span>
+                <a href="#" target="_blank" rel="noopener">https://www.sitio-externo.cl/nombre-de-archivo</a>
+              </li>
+              <li>
+                <span class="links-externos__nombre">Nombre de archivo</span>
+                <a href="#" target="_blank" rel="noopener">https://www.sitio-externo.cl/nombre-de-archivo</a>
+              </li>
+            </ul>
           </section>
         </div>
       </div>

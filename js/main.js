@@ -11,8 +11,9 @@
   });
 
   /* ---------- Ruleta (home) ----------
-     8 casos, solo texto. Al detenerse, el caso ganador se marca en la ruleta
-     y se despliega su ficha al lado: foto + fecha + título + descripción + botón.
+     8 casos, solo texto. El indicador está a la izquierda, centrado en altura:
+     el caso que queda ahí se lee en horizontal. Al detenerse, el caso se marca
+     y aparece bajo la ruleta un único botón "Ver proyecto".
      También se puede hacer clic en un caso para que la ruleta gire hasta él. */
   const ruleta = $("[data-ruleta]");
   if (ruleta && window.PROYECTOS) {
@@ -22,7 +23,9 @@
     const S = 700, C = S / 2, R = 322, CY = C + 20;
     const step = 360 / n;
     const svg = document.createElementNS(SVGNS, "svg");
-    svg.setAttribute("viewBox", `0 0 ${S} ${S + 20}`);
+    // margen simétrico a ambos lados (el izquierdo aloja el indicador): así la rueda queda centrada
+    // en el SVG y el botón "Ver proyecto" se alinea con su centro
+    svg.setAttribute("viewBox", `-30 0 ${S + 60} ${S + 20}`);
     svg.setAttribute("role", "group");
     svg.setAttribute("aria-label", "Ruleta de proyectos");
     const wheel = document.createElementNS(SVGNS, "g");
@@ -48,17 +51,15 @@
       path.setAttribute("d", `M${C} ${CY}L${x0} ${y0}A${R} ${R} 0 0 1 ${x1} ${y1}Z`);
       path.setAttribute("class", "ruleta__fill");
       seg.appendChild(path);
-      // texto radial, legible desde fuera hacia el centro
+      // texto radial orientado para leerse en horizontal cuando el caso llega al indicador (izquierda)
       const mid = i * step;
-      const [tx, ty] = polar(mid, R * 0.63);
+      const [tx, ty] = polar(mid, R * 0.7);
       const text = document.createElementNS(SVGNS, "text");
       text.setAttribute("x", tx);
       text.setAttribute("y", ty);
       text.setAttribute("text-anchor", "middle");
       text.setAttribute("dominant-baseline", "middle");
-      let rot = mid - 90;
-      if (mid > 180) rot += 180;
-      text.setAttribute("transform", `rotate(${rot} ${tx} ${ty})`);
+      text.setAttribute("transform", `rotate(${mid + 90} ${tx} ${ty})`);
       // los nombres largos van en dos líneas para no chocar con el botón central ni el borde
       const nombre = corto(p.nombre, 40);
       const palabras = nombre.split(" ");
@@ -82,9 +83,10 @@
       wheel.appendChild(seg);
     });
     svg.appendChild(wheel);
-    // puntero
+    // indicador: a la izquierda, centrado en altura, apuntando hacia la ruleta
     const pin = document.createElementNS(SVGNS, "path");
     pin.setAttribute("d", `M${C} ${48}c-9 -12 -17 -19 -17 -30a17 17 0 1 1 34 0c0 11 -8 18 -17 30z`);
+    pin.setAttribute("transform", `rotate(-90 ${C} ${CY})`);
     pin.setAttribute("fill", "#fff");
     svg.appendChild(pin);
     ruleta.prepend(svg);
@@ -92,53 +94,26 @@
     const zona = ruleta.closest(".ruleta-zona");
     const ficha = $(".ruleta__ficha");
     const btn = $(".ruleta__btn", ruleta);
-    let angle = 0, girando = false;
-
-    // en mobile la ficha se abre como modal sobre la página (ver CSS @media 760px)
-    const enMobile = () => window.matchMedia("(max-width: 760px)").matches;
-    const cerrarFicha = () => {
-      zona.classList.remove("con-ficha");
-      document.documentElement.classList.remove("visor-abierto");
-      btn.focus();
-    };
-    ficha.addEventListener("click", (e) => {
-      if (e.target.closest(".ficha-caso__cerrar") || e.target === ficha) cerrarFicha(); // botón ✕ o clic en el fondo
-    });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && enMobile() && zona.classList.contains("con-ficha")) cerrarFicha();
-    });
+    // posición inicial: el primer caso queda en el indicador
+    let angle = 270, girando = false;
+    wheel.style.transform = `rotate(${angle}deg)`;
 
     const mostrarFicha = (p) => {
       ficha.classList.remove("is-cambiando");
-      ficha.innerHTML = `
-        <div class="ficha-caso" role="dialog" aria-label="${p.nombre}">
-          <button class="ficha-caso__cerrar" type="button" aria-label="Cerrar">✕</button>
-          <div class="ficha-caso__foto"><img src="${p.img}" alt=""></div>
-          <div class="ficha-caso__cuerpo">
-            <span class="ficha-caso__fecha">${p.fecha}</span>
-            <h3 class="ficha-caso__titulo">${p.nombre}</h3>
-            <p class="ficha-caso__desc">${p.desc || ""}</p>
-            <a class="ficha-caso__ir" href="proyecto.html">Ver proyecto <span aria-hidden="true">→</span></a>
-          </div>
-        </div>`;
+      ficha.innerHTML = `<a class="ruleta__ir" href="proyecto.html" aria-label="Ver proyecto: ${p.nombre}">Ver proyecto <span aria-hidden="true">→</span></a>`;
       zona.classList.add("con-ficha");
-      if (enMobile()) {
-        document.documentElement.classList.add("visor-abierto"); // bloquea el scroll de fondo
-        $(".ficha-caso__cerrar", ficha).focus();
-      }
     };
 
     const girarA = (target, vueltas) => {
       if (girando) return;
       girando = true;
       btn.disabled = true;
-      // la ruleta no se mueve mientras gira: si la ficha ya está abierta, solo se apaga su contenido
+      // mientras gira, el botón del caso anterior se oculta
       ficha.classList.add("is-cambiando");
-      if (enMobile()) zona.classList.remove("con-ficha"); // en mobile el modal se cierra mientras gira
       $$(".ruleta__seg", wheel).forEach((s) => s.classList.remove("is-selected"));
-      // girar para que el caso "target" quede bajo el puntero (arriba)
+      // girar para que el caso "target" quede en el indicador (izquierda = 270°)
       const current = ((angle % 360) + 360) % 360;
-      const want = (360 - target * step) % 360;
+      const want = (((270 - target * step) % 360) + 360) % 360;
       let delta = want - current;
       if (delta < 0) delta += 360;
       angle += 360 * vueltas + delta;
@@ -167,6 +142,109 @@
       seg.addEventListener("click", elegir);
       seg.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); elegir(); } });
     });
+  }
+
+  /* ---------- Fichero de archivo (opción 2 de la Home) ----------
+     Un cajón con una ficha por proyecto; las pestañas asoman escalonadas.
+     "Sacar una ficha" hojea el cajón y saca una al azar; también se puede
+     sacar una a mano haciendo clic en su pestaña. La ficha sacada muestra
+     fecha, nombre y "Ver proyecto". */
+  const fichero = $("[data-fichero]");
+  if (fichero && window.PROYECTOS) {
+    const FICHAS = 12;
+    const items = window.PROYECTOS.slice(0, FICHAS);
+    const cartas = $(".fichero__cartas", fichero);
+    const zonaF = fichero.closest(".fichero-zona");
+    const btnF = $(".fichero__btn", zonaF);
+    const avisoF = $(".fichero__aviso", zonaF);
+    const corto = (s, max) => (s.length > max ? s.slice(0, max - 1).trimEnd() + "…" : s);
+    // la ficha 0 queda adelante; las de atrás suben un poco y escalonan sus pestañas en 3 columnas
+    items.forEach((p, i) => {
+      const f = document.createElement("div");
+      f.className = "tarjeta";
+      f.style.setProperty("--i", i);
+      f.style.zIndex = FICHAS - i;
+      f.innerHTML = `
+        <button class="tarjeta__pestana" type="button" style="--col:${i % 3}" aria-label="Sacar la ficha: ${p.nombre}">${corto(p.nombre, 18)}</button>
+        <div class="tarjeta__cuerpo">
+          <span class="tarjeta__fecha">${p.fecha}</span>
+          <h3 class="tarjeta__nombre">${p.nombre}</h3>
+          <a class="tarjeta__ir" href="proyecto.html" tabindex="-1">Ver proyecto <span aria-hidden="true">→</span></a>
+        </div>`;
+      cartas.appendChild(f);
+    });
+    const fichas = $$(".tarjeta", cartas);
+    let ocupado = false;
+
+    const sacar = (i) => {
+      fichas.forEach((f, k) => {
+        const fuera = k === i;
+        f.classList.toggle("is-fuera", fuera);
+        $(".tarjeta__ir", f).tabIndex = fuera ? 0 : -1;
+      });
+      fichero.classList.add("con-ficha");
+      avisoF.textContent = `Ficha: ${items[i].nombre}, ${items[i].fecha}`;
+    };
+    const guardar = () => {
+      fichas.forEach((f) => { f.classList.remove("is-fuera"); $(".tarjeta__ir", f).tabIndex = -1; });
+      fichero.classList.remove("con-ficha");
+    };
+
+    // hojear: varias fichas se levantan y bajan rápido, como al buscar con los dedos
+    const hojear = (alTerminar) => {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce) return alTerminar();
+      const pasos = 14;
+      let k = 0;
+      const tic = () => {
+        const f = fichas[Math.floor(Math.random() * fichas.length)];
+        f.classList.add("is-hojeada");
+        setTimeout(() => f.classList.remove("is-hojeada"), 140);
+        k++;
+        if (k < pasos) setTimeout(tic, 70 + k * 6); // se va frenando
+        else setTimeout(alTerminar, 260);
+      };
+      tic();
+    };
+
+    btnF.addEventListener("click", () => {
+      if (ocupado) return;
+      ocupado = true;
+      btnF.disabled = true;
+      const anterior = fichas.findIndex((f) => f.classList.contains("is-fuera"));
+      guardar();
+      setTimeout(() => hojear(() => {
+        let i = Math.floor(Math.random() * fichas.length);
+        if (i === anterior) i = (i + 1 + Math.floor(Math.random() * (fichas.length - 1))) % fichas.length; // no repetir
+        sacar(i);
+        ocupado = false;
+        btnF.disabled = false;
+      }), anterior >= 0 ? 380 : 0);
+    });
+    // sacar una ficha a mano desde su pestaña
+    fichas.forEach((f, i) => {
+      $(".tarjeta__pestana", f).addEventListener("click", () => {
+        if (ocupado) return;
+        if (f.classList.contains("is-fuera")) return guardar();
+        sacar(i);
+      });
+    });
+  }
+
+  /* ---------- Selector Ruleta / Fichero (Home) ---------- */
+  const selector = $(".selector-modo");
+  if (selector) {
+    const opciones = $$(".selector-modo__opcion", selector);
+    const paneles = $$("[data-modo-panel]");
+    const activar = (modo) => {
+      opciones.forEach((o) => o.setAttribute("aria-pressed", String(o.dataset.modo === modo)));
+      paneles.forEach((p) => { p.hidden = p.dataset.modoPanel !== modo; });
+      try { localStorage.setItem("me-modo-explorar", modo); } catch (e) {}
+    };
+    opciones.forEach((o) => o.addEventListener("click", () => activar(o.dataset.modo)));
+    let guardado = null;
+    try { guardado = localStorage.getItem("me-modo-explorar"); } catch (e) {}
+    if (guardado === "fichero" || guardado === "ruleta") activar(guardado);
   }
 
   /* ---------- Grilla Explorar proyectos ---------- */
@@ -382,6 +460,7 @@
   modal.innerHTML = `
     <div class="modal-contacto__panel">
       <button class="modal-contacto__cerrar" type="button" aria-label="Cerrar">✕</button>
+      <div class="modal-contacto__contenido">
       <p class="modal-contacto__etiqueta">Contacto</p>
       <h2 class="modal-contacto__nombre" id="modal-contacto-titulo">${CONTACTO.nombre}</h2>
       <p class="modal-contacto__rol">${CONTACTO.rol}</p>
@@ -393,10 +472,98 @@
         </button>
       </div>
       <p class="modal-contacto__aviso" aria-live="polite"></p>
+      <p class="modal-contacto__o"><span>o escríbele aquí</span></p>
+      <form class="form-contacto" novalidate>
+        <label class="form-contacto__campo">
+          <span>Nombre</span>
+          <input type="text" name="nombre" autocomplete="name" required>
+        </label>
+        <label class="form-contacto__campo">
+          <span>Correo</span>
+          <input type="email" name="correo" autocomplete="email" required>
+        </label>
+        <label class="form-contacto__campo">
+          <span>Mensaje</span>
+          <textarea name="mensaje" rows="4" required></textarea>
+        </label>
+        <p class="form-contacto__error" aria-live="polite"></p>
+        <button class="form-contacto__enviar" type="submit">Enviar mensaje <span aria-hidden="true">→</span></button>
+      </form>
+      </div>
+      <!-- estado de éxito, después de "Enviar mensaje" -->
+      <div class="modal-contacto__exito" hidden>
+        <span class="modal-contacto__check" aria-hidden="true">
+          <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="22"/><path d="M14 25l7 7 13-15"/></svg>
+        </span>
+        <h2 class="modal-contacto__nombre" tabindex="-1">¡Gracias<span class="exito-nombre"></span>!</h2>
+        <p class="modal-contacto__exito-texto">Tu mensaje fue enviado. Tatiana te responderá pronto a tu correo.</p>
+        <button class="form-contacto__enviar modal-contacto__listo" type="button">Cerrar</button>
+      </div>
     </div>`;
   document.body.appendChild(modal);
   const btnCopiar = $(".modal-contacto__copiar", modal);
   const aviso = $(".modal-contacto__aviso", modal);
+
+  // Formulario de contacto.
+  // ⚠ PROTOTIPO: todavía no envía el mensaje a ninguna parte; solo valida y muestra el éxito.
+  // Para que llegue al correo de Tatiana, completar enviarMensaje() con un servicio de
+  // formularios (p. ej. Formspree o Web3Forms): hacer el fetch y mostrar el éxito solo si responde bien.
+  const enviarMensaje = async ({ nombre, correo, mensaje }) => {
+    // TODO: conectar el envío real. Ejemplo con un servicio de formularios:
+    // const r = await fetch("https://formspree.io/f/XXXXXXX", {
+    //   method: "POST", headers: { Accept: "application/json" },
+    //   body: new URLSearchParams({ nombre, correo, mensaje, _subject: `Contacto desde Museologías Expandidas — ${nombre}` }),
+    // });
+    // if (!r.ok) throw new Error("No se pudo enviar");
+    return true;
+  };
+  const form = $(".form-contacto", modal);
+  const errorForm = $(".form-contacto__error", form);
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const campos = [...form.elements].filter((el) => el.name);
+    campos.forEach((el) => el.classList.remove("is-error"));
+    const malos = campos.filter((el) => !el.value.trim() || !el.checkValidity());
+    if (malos.length) {
+      malos.forEach((el) => el.classList.add("is-error"));
+      errorForm.textContent = malos.some((el) => el.type === "email" && el.value.trim())
+        ? "Revisa el correo: no parece válido."
+        : "Completa todos los campos para enviar.";
+      malos[0].focus();
+      return;
+    }
+    const datos = Object.fromEntries(campos.map((el) => [el.name, el.value.trim()]));
+    const boton = $(".form-contacto__enviar", form);
+    errorForm.textContent = "";
+    boton.disabled = true;
+    try {
+      await enviarMensaje(datos);
+      mostrarExito(datos.nombre);
+    } catch (err) {
+      errorForm.textContent = "No se pudo enviar el mensaje. Inténtalo de nuevo o escríbele directamente al correo.";
+    } finally {
+      boton.disabled = false;
+    }
+  });
+
+  // estado de éxito: reemplaza el contenido del modal; al cerrar, el modal vuelve a su estado inicial
+  const contenido = $(".modal-contacto__contenido", modal);
+  const exito = $(".modal-contacto__exito", modal);
+  const mostrarExito = (nombre) => {
+    $(".exito-nombre", exito).textContent = nombre ? `, ${nombre.split(" ")[0]}` : "";
+    contenido.hidden = true;
+    exito.hidden = false;
+    $(".modal-contacto__panel", modal).scrollTop = 0;
+    $(".modal-contacto__nombre", exito).focus();
+  };
+  const reiniciarModal = () => {
+    form.reset();
+    errorForm.textContent = "";
+    aviso.textContent = "";
+    contenido.hidden = false;
+    exito.hidden = true;
+  };
+  $(".modal-contacto__listo", exito).addEventListener("click", () => cerrarModal());
   let origenModal = null;
   const abrirModal = (e, enlace) => {
     e.preventDefault();
@@ -409,6 +576,7 @@
   const cerrarModal = () => {
     modal.classList.remove("is-abierto");
     document.documentElement.classList.remove("visor-abierto");
+    if (!exito.hidden) setTimeout(reiniciarModal, 350); // tras el éxito, la próxima vez parte de cero
     if (origenModal) origenModal.focus();
   };
   // delegado: sirve también para el enlace del header compacto, que se crea después

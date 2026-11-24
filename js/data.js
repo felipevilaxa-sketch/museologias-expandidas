@@ -23,10 +23,10 @@ window.PROYECTOS = [
   { id: "p12", nombre: "Nombre proyecto", fecha: "Fecha", img: "assets/img/archivo-pasaportes.jpg", desc: DESC_PROVISORIA },
 ];
 
-// Relleno provisorio hasta 20 proyectos (el sitio reúne "cerca de veinte"), para probar la paginación.
+// Relleno provisorio hasta 16 proyectos (12 en la primera página y 4 en la segunda).
 (function () {
   const fotos = ["assets/img/obra-pintura.jpg", "assets/img/fasic-sala.jpg", "assets/img/taller-piso.jpg", "assets/img/expo-sala-1.jpg"];
-  for (let n = window.PROYECTOS.length + 1; n <= 20; n++) {
+  for (let n = window.PROYECTOS.length + 1; n <= 16; n++) {
     window.PROYECTOS.push({ id: "p" + String(n).padStart(2, "0"), nombre: "Nombre proyecto", fecha: "Fecha", img: fotos[n % fotos.length], desc: DESC_PROVISORIA });
   }
 })();
