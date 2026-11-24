@@ -1,0 +1,7 @@
+# configuración local de herramientas
+.claude/
+# carpeta de trabajo aparte (no forma parte del sitio publicado)
+sitio-museologias-expandidas/
+# sistema
+.DS_Store
+Thumbs.db

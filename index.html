@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Museologías Expandidas</title>
+  <meta name="description" content="Plataforma digital de investigación, archivo y difusión del trabajo museológico de Tatiana Wolff Rojas.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Sora:wght@300;400;600;700&family=Space+Grotesk:wght@400;500&family=Space+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script>
+    // Si la intro de la portada se va a reproducir, el header parte oculto (sin parpadeo).
+    // js/hero.js lo muestra cuando entra el degradado azul.
+    try {
+      var verIntro = sessionStorage.getItem("me-hero-visto") !== "1" || /[?&]intro\b/.test(location.search);
+      if (verIntro && !matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("hero-intro");
+    } catch (e) {}
+  </script>
+</head>
+<body>
+
+  <header class="site-header">
+    <a class="logo" href="index.html">
+      <img src="assets/logos/logo-letras-blanco.png" alt="Museologías Expandidas — inicio" width="1399" height="255">
+    </a>
+    <nav class="site-nav" aria-label="Principal">
+      <a href="proyectos.html">Explorar proyectos</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero hero--home" aria-label="Portada" data-hero-escena data-final="completa" data-img="assets/img/hero-home.jpg">
+      <a class="scroll-cue" href="#intro">
+        <span class="scroll-cue__linea" aria-hidden="true"></span>
+        <span class="scroll-cue__texto">Desliza para recorrer</span>
+      </a>
+    </section>
+
+    <section class="intro" id="intro">
+      <div class="intro__head">
+        <h1 class="intro__title">EL MUSEO MÁS ALLÁ DE SUS MUROS</h1>
+        <p class="intro__sub">Tatiana Wolff Rojas. Diseñadora y Museóloga</p>
+      </div>
+      <div class="intro__grid">
+        <div class="intro__text">
+          <h2>¿Qué es Museologías Expandidas?</h2>
+          <p>Es una plataforma digital de investigación, archivo y difusión de mi trabajo museológico. Reúne cerca de veinte proyectos de exposiciones, estudios de memorias, archivos y curaduría patrimonial, desarrollados junto a diversas comunidades, equipos de trabajo, amigas y amigos en distintos territorios, desde 2008.</p>
+          <p>Propone una cartografía museal para conocer los procesos, contextos y metodologías colaborativas de los distintos proyectos, y acercarse a una práctica museológica que se expande hacia otros espacios, formatos y disciplinas: obras de teatro, etnografías, rutas patrimoniales, archivos digitales, materiales de mediación, sitios de memoria, docencia, entre otros.</p>
+          <p>Les invito a tomarse el tiempo para recorrer estos procesos, conocer las experiencias detrás de cada proyecto y compartirlos con quienes crean que podrían interesarse.</p>
+        </div>
+        <!-- Video de YouTube: pegar el ID del video en data-youtube (ej. "dQw4w9WgXcQ").
+             La imagen de vista previa es el <img class="video__poster">. -->
+        <div class="video" data-youtube="">
+          <img class="video__poster" src="assets/img/hero-archivo.jpg" alt="" loading="lazy">
+          <button class="video__play" type="button" aria-label="Reproducir video">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+          </button>
+          <span class="video__label">Ver video</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Transición tipo cortina: esta sección sube y tapa a la sección crema, que queda fija;
+         al cubrir la pantalla aparecen el título y la ruleta (js/intro.js) -->
+    <section class="explorar-home" aria-labelledby="explorar-titulo">
+      <div class="explorar-home__escena">
+        <h2 class="section-label" id="explorar-titulo"><a href="proyectos.html">Explorar proyectos</a></h2>
+        <div class="ruleta-zona">
+          <div class="ruleta" data-ruleta>
+            <button class="ruleta__btn" type="button">Gira la ruleta</button>
+          </div>
+          <!-- ficha del caso donde se detiene la ruleta (la llena js/main.js) -->
+          <div class="ruleta__ficha" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="contacto">
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Una plataforma de investigación, archivo y documentación de procesos museológicos ✱</span>
+        <span>Mezclas, desplazamientos y otras formas de hacer museología ✱</span>
+      </div>
+    </div>
+    <div class="site-footer__logo">
+      <a class="logo-footer" href="index.html">
+        <img src="assets/logos/logo-completo-blanco.png" alt="Museologías Expandidas — inicio" width="2025" height="664" loading="lazy">
+      </a>
+    </div>
+    <div class="disclaimer">
+      <p>Este sitio documenta mi participación profesional en proyectos desarrollados para instituciones públicas, privadas y organizaciones comunitarias, así como colaboraciones con artistas, fotógrafas y otrxs profesionales, a quienes agradezco sus aportes y trabajo compartido.</p>
+      <p>En muchos casos, los productos finales pertenecen a las instituciones mandantes, sus autorías o titulares de derechos. Las descripciones, reflexiones y documentación de los procesos corresponden a mi trabajo y se presentan con fines de investigación, archivo y difusión de mi trayectoria profesional, respetando los créditos y derechos de propiedad intelectual correspondientes.</p>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/topo.js"></script>
+  <script src="js/hero.js"></script>
+  <script src="js/intro.js"></script>
+</body>
+</html>
